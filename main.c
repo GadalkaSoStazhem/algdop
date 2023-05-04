@@ -92,73 +92,50 @@ int main(){
     return 0;
 }
 */
-
+//1080 спизженно
+#include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 
-int main(){
-    int m, n, k;
-    scanf("%d %d %d", &m, &n, &k);
-    char ** life;
-    life = (char **) malloc((m + 2) * sizeof (char *));
+#define N 100
 
-    for (int i = 0; i < m + 2; i++){
-        life[i] = (char *) malloc((n + 2) * sizeof(char ));
-        for (int j = 0; j < n + 2; j++){
-            if (i == 0 || i == (m + 1) || j == 0 || j == (n + 1)){
-                life[i][j] = -1;
-            }
-            else{
-                life[i][j] = 0;
+bool mas[N][N];
+int colors[N];
+bool flag = true;
+
+void coloring(int country, int color, int n) {
+    colors[country] = color;
+
+    for (int sosed = 0; sosed < n; ++sosed) {
+        if (mas[country][sosed]) {
+            if (colors[sosed] == -1) {
+                coloring(sosed, 1 - color, n);
+            } else if (colors[sosed] == color) {
+                flag = false;
             }
         }
     }
-    for (int i = 0; i < k; i++){
-        int x, y;
-        scanf("%d %d", &x, &y);
-        life[x][y] = 1;
-    }
-    int cnt_str = 0;
-    int cnt_single = 0;
-    int cnt_stolb = 0;
-    for (int i = 1; i < m + 1; i++){
-        int ind = 1;
-        int max_tmp = 0;
-        while (ind < n + 1){
-            if (life[i][ind] == 0){
-                max_tmp ++;
-                if (max_tmp == 1){
-                    if (life[i][ind - 1] != 0 && life[i][ind + 1] != 0 && life[i + 1][ind] != 0 && life[i - 1][ind] != 0){
-                        cnt_single ++;
-                    }
-                }
-                if (life[i][ind + 1] != 0 && max_tmp > 1)
-                    cnt_str++;
-            }
-            else{
-                max_tmp = 0;
-            }
-            ind++;
+}
+
+int main() {
+    int n, sosed;
+
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; ++i) {
+        colors[i] = -1;
+        while (scanf("%d", &sosed), sosed != 0) {
+            mas[i][sosed - 1] = true;
+            mas[sosed - 1][i] = true;
         }
     }
-
-    for (int j = 1; j < n + 1; j++){
-        int ind = 1;
-        int max_tmp = 0;
-
-        while (ind < m + 1){
-            if (life[ind][j] == 0){
-                max_tmp ++;
-                if (life[ind + 1][j] != 0 && max_tmp > 1)
-                    cnt_stolb++;
-            }
-            else{
-                max_tmp = 0;
-            }
-            ind++;
+    coloring(0, 0, n);
+    if (flag) {
+        for (int i = 0; i < n; ++i) {
+            printf("%d", colors[i]);
         }
-
+    } else {
+        printf("-1");
     }
-    printf("%d \n", cnt_single+cnt_stolb+cnt_str);
-    free(life);
+
+    return 0;
 }
