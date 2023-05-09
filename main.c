@@ -93,7 +93,7 @@ int main(){
 }
 */
 //1080 спизженно
-#include <stdbool.h>
+/*#include <stdbool.h>
 #include <stdio.h>
 
 #define N 100
@@ -136,6 +136,83 @@ int main() {
     } else {
         printf("-1");
     }
+
+    return 0;
+}
+ */
+//1162 спизженно
+#include <stdbool.h>
+#include <stdio.h>
+
+#define MAXN 101
+#define MAXM 201
+
+struct comb {
+    int a, b;
+    double rab, cab, rba, cba;
+};
+
+int n, m, s;
+double v;
+struct comb combs[MAXM];
+
+bool bellman_ford() {
+    double cur[MAXN] = {0};
+    cur[s] = v;
+
+    for (int i = 1; i < n; ++i) {
+        for (int j = 0; j < m; ++j) {
+            int a = combs[j].a;
+            int b = combs[j].b;
+
+            if (cur[a] > combs[j].cab) {
+                double new_cur = (cur[a] - combs[j].cab) * combs[j].rab;
+                if (new_cur > cur[b]) {
+                    cur[b] = new_cur;
+                }
+            }
+
+            if (cur[b] > combs[j].cba) {
+                double new_cur = (cur[b] - combs[j].cba) * combs[j].rba;
+                if (new_cur > cur[a]) {
+                    cur[a] = new_cur;
+                }
+            }
+        }
+    }
+
+    for (int j = 0; j < m; ++j) {
+        int a = combs[j].a;
+        int b = combs[j].b;
+
+        if (cur[a] > combs[j].cab) {
+            double new_cur = (cur[a] - combs[j].cab) * combs[j].rab;
+            if (new_cur > cur[b]) {
+                return true;
+            }
+        }
+
+        if (cur[b] > combs[j].cba) {
+            double new_cur = (cur[b] - combs[j].cba) * combs[j].rba;
+            if (new_cur > cur[a]) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+int main() {
+    scanf("%d %d %d %lf", &n, &m, &s, &v);
+
+    for (int i = 0; i < m; ++i) {
+        scanf("%d %d %lf %lf %lf %lf", &combs[i].a, &combs[i].b,
+              &combs[i].rab, &combs[i].cab, &combs[i].rba,
+              &combs[i].cba);
+    }
+
+    printf("%s\n", bellman_ford() ? "YES" : "NO");
 
     return 0;
 }
